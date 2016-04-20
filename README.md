@@ -16,7 +16,7 @@ Enum.each JMDict.entries_stream, fn entry ->
   entry.pos     # part of speech # List[String]
   entry.kanji   # kanji          # List[String]
   entry.kana    # kana           # List[String]
-  entry.glosses # kana           # List[String]
+  entry.glosses # glosses        # List[String]
 end
 ```
 
