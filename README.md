@@ -1,5 +1,11 @@
 # JMDict
 
+Fetch and parse [JMDict](https://www.mdbg.net/chindict/export/cedict/cedict_1_0_ts_utf-8_mdbg.zip) in Elixir
+
+> The JMdict (Japanese-Multilingual Dictionary) project has at its aim the compilation of a multilingual lexical database with Japanese as the pivot language.
+
+**NOTE**: Currently uses JMDict_e (Japanese->English only).
+
 ## Usage
 
 Use the entries stream in your code:
