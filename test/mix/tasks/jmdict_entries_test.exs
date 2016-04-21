@@ -11,6 +11,6 @@ defmodule JMDict.EntriesMixTaskTest do
   test "module receives entries stream" do
     consumer = "JMDict.EntryStreamConsumer.take_one"
     entry = Mix.Tasks.JMDict.Entries.run([consumer])
-    assert entry.eid == '1000000'
+    assert entry.eid == "1000000"
   end
 end

@@ -23,11 +23,11 @@ defmodule JMDict do
     end)
   end
 
-  defp eid_xpath,     do: ~x"./ent_seq/text()"
-  defp kanji_xpath,   do: ~x"./k_ele/keb/text()"l
-  defp kana_xpath,    do: ~x"./r_ele/reb/text()"l
-  defp pos_xpath,     do: ~x"./sense/pos/text()"l
-  defp glosses_xpath, do: ~x"./sense/gloss/text()"l
+  defp eid_xpath,     do: ~x"./ent_seq/text()"s
+  defp kanji_xpath,   do: ~x"./k_ele/keb/text()"ls
+  defp kana_xpath,    do: ~x"./r_ele/reb/text()"ls
+  defp pos_xpath,     do: ~x"./sense/pos/text()"ls
+  defp glosses_xpath, do: ~x"./sense/gloss/text()"ls
 
   defp xml_entities do
     xml_entity_re = ~r{ENTITY ([^ ]+) "(.+?)"}
