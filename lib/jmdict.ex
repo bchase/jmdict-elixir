@@ -40,17 +40,17 @@ defmodule JMDict do
     end)
   end
 
-  defp get_kanji_info(eles, val_for_name_map) do
-    get_char_info eles, val_for_name_map,
+  defp get_kanji_info(eles) do
+    get_char_info eles,
       ~x"//k_ele"e, ~x"./keb/text()"ls, ~x"./ke_inf/text()"ls
   end
 
-  defp get_kana_info(eles, val_for_name_map) do
-    get_char_info eles, val_for_name_map,
+  defp get_kana_info(eles) do
+    get_char_info eles,
       ~x"//r_ele"e, ~x"./reb/text()"ls, ~x"./re_inf/text()"ls
   end
 
-  defp get_char_info(eles, val_for_name_map, ele_xpath, char_xpath, inf_xpath) do
+  defp get_char_info(eles, ele_xpath, char_xpath, inf_xpath) do
     Enum.reduce(eles, %{}, fn ele, char_info ->
       ele = xpath ele, ele_xpath,
         infs:  inf_xpath,
@@ -66,13 +66,11 @@ defmodule JMDict do
   end
 
   defp map_to_entries(entries) do
-    val_for_name_map = xml_entities_val_to_name
-
     entries
     |> Stream.map(fn entry_map ->
       entry_map = Map.merge entry_map, %{
-        kanji_info: get_kanji_info(entry_map.k_eles, val_for_name_map),
-        kana_info:  get_kana_info(entry_map.r_eles, val_for_name_map)
+        kanji_info: get_kanji_info(entry_map.k_eles),
+        kana_info:  get_kana_info(entry_map.r_eles)
       }
 
       struct Entry, entry_map
@@ -80,7 +78,7 @@ defmodule JMDict do
   end
 
   defp entity_vals_to_names(entries) do
-    val_for_name_map = xml_entities_val_to_name
+    val_for_name_map = xml_entities_val_to_name_map
 
     vals_arr_to_names = fn arr -> Enum.map arr, &val_for_name_map[&1] end
     info_map_vals_to_names = fn info_map, entry ->
@@ -100,13 +98,13 @@ defmodule JMDict do
     end)
   end
 
-  def xml_entities_name_to_val do
+  def xml_entities_name_to_val_map do
     xml_entities
     |> Enum.map(&List.to_tuple/1)
     |> Enum.into(%{})
   end
 
-  def xml_entities_val_to_name do
+  def xml_entities_val_to_name_map do
     xml_entities
     |> Enum.map(&Enum.reverse/1)
     |> Enum.map(&List.to_tuple/1)

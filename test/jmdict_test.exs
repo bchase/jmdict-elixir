@@ -8,8 +8,8 @@ defmodule JMDictTest do
   end
 
   test "xml entity lookup key<->val" do
-    assert JMDict.xml_entities_name_to_val["abbr"] == "abbreviation"
-    assert JMDict.xml_entities_val_to_name["abbreviation"] == "abbr"
+    assert JMDict.xml_entities_name_to_val_map["abbr"] == "abbreviation"
+    assert JMDict.xml_entities_val_to_name_map["abbreviation"] == "abbr"
   end
 
   test "provides kanji/kana info", %{entries: entries} do
