@@ -18,7 +18,7 @@ defmodule JMDict do
     |> stream_tags([:entry])
     |> query_for_entry_values
     |> map_to_entries
-    |> pos_and_info_entity_vals_to_names
+    |> entity_vals_to_names
   end
 
   defp query_for_entry_values(entries) do
@@ -41,21 +41,13 @@ defmodule JMDict do
   end
 
   defp get_kanji_info(eles, val_for_name_map) do
-    ele_xpath  = ~x"//k_ele"e
-    inf_xpath  = ~x"./ke_inf/text()"ls
-    char_xpath = ~x"./keb/text()"ls
-
     get_char_info eles, val_for_name_map,
-      ele_xpath, char_xpath, inf_xpath
+      ~x"//k_ele"e, ~x"./keb/text()"ls, ~x"./ke_inf/text()"ls
   end
 
   defp get_kana_info(eles, val_for_name_map) do
-    ele_xpath  = ~x"//r_ele"e
-    inf_xpath  = ~x"./re_inf/text()"ls
-    char_xpath = ~x"./reb/text()"ls
-
     get_char_info eles, val_for_name_map,
-      ele_xpath, char_xpath, inf_xpath
+      ~x"//r_ele"e, ~x"./reb/text()"ls, ~x"./re_inf/text()"ls
   end
 
   defp get_char_info(eles, val_for_name_map, ele_xpath, char_xpath, inf_xpath) do
@@ -63,11 +55,10 @@ defmodule JMDict do
       ele = xpath ele, ele_xpath,
         infs:  inf_xpath,
         chars: char_xpath
-      [char] = ele.chars
-      infs = Enum.map ele.infs, & val_for_name_map[&1]
 
-      if length(infs) > 0 do
-        Map.put char_info, char, infs
+      if length(ele.infs) > 0 do
+        [char] = ele.chars
+        Map.put char_info, char, ele.infs
       else
         char_info
       end
@@ -79,32 +70,33 @@ defmodule JMDict do
 
     entries
     |> Stream.map(fn entry_map ->
-      # if ke_inf found in the //entry ...
-      if length(entry_map.k_eles) > 0 do
-        # get all k_ele
-        kanji_info = get_kanji_info entry_map.k_eles, val_for_name_map
+      entry_map = Map.merge entry_map, %{
+        kanji_info: get_kanji_info(entry_map.k_eles, val_for_name_map),
+        kana_info:  get_kana_info(entry_map.r_eles, val_for_name_map)
+      }
 
-        if kanji_info do
-          entry_map = Map.put entry_map, :kanji_info, kanji_info
-        end
-        # if entry_map.eid == "1000225" do
-        #   require IEx; IEx.pry
-        # end
-      end
-
-      Map.drop entry_map, [:k_ele, :r_ele]
       struct Entry, entry_map
     end)
   end
 
-  defp pos_and_info_entity_vals_to_names(entries) do
+  defp entity_vals_to_names(entries) do
     val_for_name_map = xml_entities_val_to_name
+
+    vals_arr_to_names = fn arr -> Enum.map arr, &val_for_name_map[&1] end
+    info_map_vals_to_names = fn info_map, entry ->
+      Enum.reduce(info_map, %{}, fn {kanji, info_arr}, new_map ->
+        Map.put new_map, kanji, vals_arr_to_names.(info_arr)
+      end)
+    end
 
     entries
     |> Stream.map(fn entry ->
-      pos  = Enum.map(entry.pos,  &val_for_name_map[&1])
-      info = Enum.map(entry.info, &val_for_name_map[&1])
-      %{entry | pos: pos, info: info}
+      %{entry |
+        pos:        vals_arr_to_names.(entry.pos),
+        info:       vals_arr_to_names.(entry.info),
+        kanji_info: info_map_vals_to_names.(entry.kanji_info, entry),
+        kana_info:  info_map_vals_to_names.(entry.kana_info, entry)
+      }
     end)
   end
 

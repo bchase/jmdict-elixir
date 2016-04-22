@@ -17,7 +17,7 @@ defmodule JMDictTest do
     assert akarasama.kanji_info["明白"] == ["ateji"]
 
     asoko = get_entry_by_eid entries, 1000320
-    assert akarasama.kana_info["あしこ"] == ["ok"]
+    assert asoko.kana_info["あしこ"] == ["ok"]
   end
 
   test "parses xml into stream of struct ", %{entries: entries} do
