@@ -24,7 +24,7 @@ defmodule JMDict do
   defp query_for_entry_values(entries) do
     entries
     |> Stream.map(fn {_, doc} ->
-      e = xpath doc, ~x"//entry"e,
+      xpath doc, ~x"//entry"e,
         eid:     eid_xpath,
         kanji:   kanji_xpath,
         kana:    kana_xpath,
@@ -81,7 +81,7 @@ defmodule JMDict do
     val_for_name_map = xml_entities_val_to_name_map
 
     vals_arr_to_names = fn arr -> Enum.map arr, &val_for_name_map[&1] end
-    info_map_vals_to_names = fn info_map, entry ->
+    info_map_vals_to_names = fn info_map ->
       Enum.reduce(info_map, %{}, fn {kanji, info_arr}, new_map ->
         Map.put new_map, kanji, vals_arr_to_names.(info_arr)
       end)
@@ -92,8 +92,8 @@ defmodule JMDict do
       %{entry |
         pos:        vals_arr_to_names.(entry.pos),
         info:       vals_arr_to_names.(entry.info),
-        kanji_info: info_map_vals_to_names.(entry.kanji_info, entry),
-        kana_info:  info_map_vals_to_names.(entry.kana_info, entry)
+        kanji_info: info_map_vals_to_names.(entry.kanji_info),
+        kana_info:  info_map_vals_to_names.(entry.kana_info)
       }
     end)
   end
