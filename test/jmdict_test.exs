@@ -1,7 +1,7 @@
 defmodule JMDictTest do
   use ExUnit.Case, async: true
 
-  setup do
+  setup_all do
     entries = JMDict.entries_stream
 
     entries = %{
