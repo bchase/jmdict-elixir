@@ -134,7 +134,7 @@ defmodule JMDict do
     ~x"./sense/misc/text() | ./sense/dial/text() | ./sense/field/text()"ls
   end
 
-  def  xml_stream do
+  defp xml_stream do
     xml_filepath = "/tmp/JMdict_e"
 
     unless File.exists? xml_filepath do
