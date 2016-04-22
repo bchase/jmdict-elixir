@@ -3,31 +3,39 @@ defmodule JMDict do
 
   defmodule Entry do
     defstruct eid: "",
-      pos: [],
-      kanji: [],
-      kana: [],
-      glosses: []
+      kanji:   [],
+      kana:    [],
+      glosses: [],
+      pos:     [],
+      info:    [],
+      xrefs:   []
   end
 
   def entries_stream do
     xml_stream
     |> stream_tags([:entry])
     |> Stream.map(fn {_, doc} ->
-      entry = xpath doc, ~x"//entry"e,
+      e = xpath doc, ~x"//entry"e,
         eid:     eid_xpath,
         kanji:   kanji_xpath,
         kana:    kana_xpath,
+        glosses: glosses_xpath,
         pos:     pos_xpath,
-        glosses: glosses_xpath
-      struct(Entry, entry)
+        xrefs:   xrefs_xpath,
+        info:    info_xpath
+      struct Entry, e
     end)
   end
 
   defp eid_xpath,     do: ~x"./ent_seq/text()"s
   defp kanji_xpath,   do: ~x"./k_ele/keb/text()"ls
   defp kana_xpath,    do: ~x"./r_ele/reb/text()"ls
-  defp pos_xpath,     do: ~x"./sense/pos/text()"ls
   defp glosses_xpath, do: ~x"./sense/gloss/text()"ls
+  defp pos_xpath,     do: ~x"./sense/pos/text()"ls
+  defp xrefs_xpath,   do: ~x"./sense/xref/text()"ls
+  defp info_xpath do
+    ~x"./sense/misc/text() | ./sense/dial/text() | ./sense/field/text()"ls
+  end
 
   defp xml_entities do
     xml_entity_re = ~r{ENTITY ([^ ]+) "(.+?)"}
@@ -77,7 +85,7 @@ defmodule JMDict do
 
   defp get_body(url) do
     HTTPoison.start
-    %{body: body} = HTTPoison.get! url
+    %{body: body} = HTTPoison.get! url, [], timeout: 20_000
     body
   end
 end
