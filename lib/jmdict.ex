@@ -12,10 +12,14 @@ defmodule JMDict do
   end
 
   def entries_stream do
-    val_for_name = xml_entities_val_to_name
-
     xml_stream
     |> stream_tags([:entry])
+    |> tags_to_entries
+    |> pos_and_info_entity_vals_to_names
+  end
+
+  defp tags_to_entries(entries) do
+    entries
     |> Stream.map(fn {_, doc} ->
       e = xpath doc, ~x"//entry"e,
         eid:     eid_xpath,
@@ -27,6 +31,12 @@ defmodule JMDict do
         info:    info_xpath
       struct Entry, e
     end)
+  end
+
+  defp pos_and_info_entity_vals_to_names(entries) do
+    val_for_name = xml_entities_val_to_name
+
+    entries
     |> Stream.map(fn entry ->
       pos  = Enum.map(entry.pos,  &val_for_name[&1])
       info = Enum.map(entry.info, &val_for_name[&1])
