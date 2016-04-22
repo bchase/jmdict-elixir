@@ -4,6 +4,13 @@ defmodule JMDictTest do
   setup do
     entries = JMDict.entries_stream
 
+    entries = %{
+      akarasama:    get_entry_by_eid(entries, 1000225),
+      asoko:        get_entry_by_eid(entries, 1000320),
+      kansuujizero: get_entry_by_eid(entries, 1000080),
+      irasshai:     get_entry_by_eid(entries, 1000920),
+    }
+
     {:ok, entries: entries}
   end
 
@@ -12,42 +19,27 @@ defmodule JMDictTest do
     assert JMDict.xml_entities_val_to_name_map["abbreviation"] == "abbr"
   end
 
-  test "provides kanji/kana info", %{entries: entries} do
-    akarasama = get_entry_by_eid entries, 1000225
-    assert akarasama.kanji_info["明白"] == ["ateji"]
-
-    asoko = get_entry_by_eid entries, 1000320
-    assert asoko.kana_info["あしこ"] == ["ok"]
+  test "provides kanji/kana info", %{entries: e} do
+    assert e.akarasama.kanji_info["明白"] == ["ateji"]
+    assert e.asoko.kana_info["あしこ"] == ["ok"]
   end
 
-  test "parses xml into stream of struct ", %{entries: entries} do
+  test "parses xml into stream of struct ", %{entries: e} do
     # %JMDict.Entry{eid: "1000080", kanji: ["漢数字ゼロ"], ...}
-    %{kanji: [kanji]} = get_entry_by_eid entries, 1000080
-    assert kanji == "漢数字ゼロ"
+    assert match? ["漢数字ゼロ"], e.kansuujizero.kanji
 
     # %JMDict.Entry{eid: "1000920", glosses: ["come", "go", "stay", "welcome!"],
     #   info: ["honorific or respectful (sonkeigo) language"],
     #   kana: ["いらっしゃい", "いらしゃい"], kanji: [],
     #   pos: ["interjection (kandoushi)", "n"],
     #   xrefs: ["いらっしゃる・1", "いらっしゃいませ"]}
-    irasshai = get_entry_by_eid entries, 1000920
-    %{
-      eid:      eid,
-      kanji:    kanji,
-      kana:    [kana1, _],
-      glosses: [g1|_],
-      pos:     [_, pos2],
-      info:    [info],
-      xrefs:   [_, xref2],
-    } = irasshai
-
-    assert eid == "1000920"
-    assert length(kanji) == 0
-    assert kana1 == "いらっしゃい"
-    assert g1 == "come"
-    assert pos2 == "n"
-    assert info == "hon"
-    assert xref2 == "いらっしゃいませ"
+    assert match? "1000920", e.irasshai.eid
+    assert match? 0, length(e.irasshai.kanji)
+    assert match? ["いらっしゃい", _], e.irasshai.kana
+    assert match? ["come"|_], e.irasshai.glosses
+    assert match? [_, "n"], e.irasshai.pos
+    assert match? ["hon"], e.irasshai.info
+    assert match? [_,"いらっしゃいませ"], e.irasshai.xrefs
   end
 
   def get_entry_by_eid(entries, eid) do
