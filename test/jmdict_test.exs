@@ -7,8 +7,9 @@ defmodule JMDictTest do
     {:ok, entries: entries}
   end
 
-  test "parses xml entities into key/val pairs" do
-    assert JMDict.xml_entities["abbr"] == "abbreviation"
+  test "xml entity lookup key<->val" do
+    assert JMDict.xml_entities_name_to_val["abbr"] == "abbreviation"
+    assert JMDict.xml_entities_val_to_name["abbreviation"] == "abbr"
   end
 
   test "parses xml into stream of struct ", %{entries: entries} do
@@ -37,8 +38,9 @@ defmodule JMDictTest do
     assert eid == "1000920"
     assert length(kanji) == 0
     assert kana1 == "いらっしゃい"
-    assert String.contains?(pos2, "futsuumeishi")
-    assert String.contains?(info, "sonkeigo")
+    assert g1 == "come"
+    assert pos2 == "n"
+    assert info == "hon"
     assert xref2 == "いらっしゃいませ"
   end
 end
@@ -49,4 +51,5 @@ end
 #   info: ["honorific or respectful (sonkeigo) language"],
 #   kana: ["いらっしゃい", "いらしゃい"], kanji: [],
 #   pos: ["interjection (kandoushi)", "noun (common) (futsuumeishi)"],
+#                                   # "n" ^ when entities_to_val: false
 #   xrefs: ["いらっしゃる・1", "いらっしゃいませ"]}

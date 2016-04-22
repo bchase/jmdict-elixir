@@ -11,7 +11,9 @@ defmodule JMDict do
       xrefs:   []
   end
 
-  def entries_stream(opts \\ [entities_to_val: true]) do
+  def entries_stream do
+    val_for_name = xml_entities_val_to_name
+
     xml_stream
     |> stream_tags([:entry])
     |> Stream.map(fn {_, doc} ->
@@ -25,10 +27,28 @@ defmodule JMDict do
         info:    info_xpath
       struct Entry, e
     end)
+    |> Stream.map(fn entry ->
+      pos  = Enum.map(entry.pos,  &val_for_name[&1])
+      info = Enum.map(entry.info, &val_for_name[&1])
+      %{entry | pos: pos, info: info}
+    end)
   end
 
-  def xml_entity_re, do: ~r{\<\!ENTITY ([^\s]+) "(.+)"\>}
-  def xml_entities do
+  def xml_entities_name_to_val do
+    xml_entities
+    |> Enum.map(&List.to_tuple/1)
+    |> Enum.into(%{})
+  end
+
+  def xml_entities_val_to_name do
+    xml_entities
+    |> Enum.map(&Enum.reverse/1)
+    |> Enum.map(&List.to_tuple/1)
+    |> Enum.into(%{})
+  end
+
+  defp xml_entity_re, do: ~r{\<\!ENTITY ([^\s]+) "(.+)"\>}
+  defp xml_entities do
     xml_stream
     |> Stream.take_while(& !Regex.match? ~r{^\<JMdict}, &1)
     |> Enum.to_list
@@ -36,8 +56,6 @@ defmodule JMDict do
         Regex.run xml_entity_re, line, capture: :all_but_first
     end)
     |> Enum.reject(& is_nil &1)
-    |> Enum.map(&List.to_tuple/1)
-    |> Enum.into(%{})
   end
 
   defp eid_xpath,     do: ~x"./ent_seq/text()"s
