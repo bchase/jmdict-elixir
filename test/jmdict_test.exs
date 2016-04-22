@@ -13,18 +13,16 @@ defmodule JMDictTest do
   end
 
   test "parses xml into stream of struct ", %{entries: entries} do
-    %{kanji: [kanji]} = entries
-                        |> Stream.take_while(& String.to_integer(&1.eid) <= 1000080)
-                        |> Enum.to_list
-                        |> List.last
-
+    # %JMDict.Entry{eid: "1000080", kanji: ["漢数字ゼロ"], ...}
+    %{kanji: [kanji]} = get_entry_by_eid entries, 1000080
     assert kanji == "漢数字ゼロ"
 
-    irasshai = entries
-                |> Stream.take_while(& String.to_integer(&1.eid) <= 1000920)
-                |> Enum.to_list
-                |> List.last
-
+    # %JMDict.Entry{eid: "1000920", glosses: ["come", "go", "stay", "welcome!"],
+    #   info: ["honorific or respectful (sonkeigo) language"],
+    #   kana: ["いらっしゃい", "いらしゃい"], kanji: [],
+    #   pos: ["interjection (kandoushi)", "n"],
+    #   xrefs: ["いらっしゃる・1", "いらっしゃいませ"]}
+    irasshai = get_entry_by_eid entries, 1000920
     %{
       eid:      eid,
       kanji:    kanji,
@@ -43,13 +41,13 @@ defmodule JMDictTest do
     assert info == "hon"
     assert xref2 == "いらっしゃいませ"
   end
-end
 
-# %JMDict.Entry{eid: "1000080", kanji: ["漢数字ゼロ"], ...}
-#
-# %JMDict.Entry{eid: "1000920", glosses: ["come", "go", "stay", "welcome!"],
-#   info: ["honorific or respectful (sonkeigo) language"],
-#   kana: ["いらっしゃい", "いらしゃい"], kanji: [],
-#   pos: ["interjection (kandoushi)", "noun (common) (futsuumeishi)"],
-#                                   # "n" ^ when entities_to_val: false
-#   xrefs: ["いらっしゃる・1", "いらっしゃいませ"]}
+  def get_entry_by_eid(entries, eid) do
+    eid = if is_integer(eid), do: eid, else: String.to_integer(eid)
+
+    entries
+    |> Stream.take_while(& String.to_integer(&1.eid) <= eid)
+    |> Enum.to_list
+    |> List.last
+  end
+end
