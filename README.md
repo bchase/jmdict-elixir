@@ -48,7 +48,7 @@ Example entry:
 }
 ```
 
-Look up XML entity values by name, and vice versa:
+Look up [XML entity](http://www.csse.monash.edu.au/~jwb/jmdict_dtd_h.html) values by name, and vice versa:
 
 ```elixir
 JMDict.xml_entities_name_to_val_map["abbr"]
