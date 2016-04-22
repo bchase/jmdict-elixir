@@ -11,7 +11,7 @@ Fetch and parse [JMDict](https://www.mdbg.net/chindict/export/cedict/cedict_1_0_
 The following call to `JMDict.entries_stream` will download the latest version of JMdict to `/tmp`, but if you'd like to use the copy stored in this repo instead, just copy it over before you run the code below.
 
 ```
-$ cp xml/JMdict_e.gz /tmp
+$ cp xml/JMdict_e.gz /tmp && gunzip /tmp/JMdict_e.gz
 ```
 
 You can use the entries stream to seed your DB:
