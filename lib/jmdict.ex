@@ -3,22 +3,25 @@ defmodule JMDict do
 
   defmodule Entry do
     defstruct eid: "",
-      kanji:   [],
-      kana:    [],
-      glosses: [],
-      pos:     [],
-      info:    [],
-      xrefs:   []
+      kanji:       [],
+      kana:        [],
+      glosses:     [],
+      pos:         [],
+      info:        [],
+      xrefs:       [],
+      kanji_info: %{},
+      kana_info:  %{}
   end
 
   def entries_stream do
     xml_stream
     |> stream_tags([:entry])
-    |> tags_to_entries
+    |> query_for_entry_values
+    |> map_to_entries
     |> pos_and_info_entity_vals_to_names
   end
 
-  defp tags_to_entries(entries) do
+  defp query_for_entry_values(entries) do
     entries
     |> Stream.map(fn {_, doc} ->
       e = xpath doc, ~x"//entry"e,
@@ -28,18 +31,79 @@ defmodule JMDict do
         glosses: glosses_xpath,
         pos:     pos_xpath,
         xrefs:   xrefs_xpath,
-        info:    info_xpath
-      struct Entry, e
+        info:    info_xpath,
+
+        # these are removed later for
+        # `kanji_info` and `kana_info`
+        k_eles: ~x"./k_ele"le,
+        r_eles: ~x"./r_ele"le
+    end)
+  end
+
+  defp get_kanji_info(eles, val_for_name_map) do
+    ele_xpath  = ~x"//k_ele"e
+    inf_xpath  = ~x"./ke_inf/text()"ls
+    char_xpath = ~x"./keb/text()"ls
+
+    get_char_info eles, val_for_name_map,
+      ele_xpath, char_xpath, inf_xpath
+  end
+
+  defp get_kana_info(eles, val_for_name_map) do
+    ele_xpath  = ~x"//r_ele"e
+    inf_xpath  = ~x"./re_inf/text()"ls
+    char_xpath = ~x"./reb/text()"ls
+
+    get_char_info eles, val_for_name_map,
+      ele_xpath, char_xpath, inf_xpath
+  end
+
+  defp get_char_info(eles, val_for_name_map, ele_xpath, char_xpath, inf_xpath) do
+    Enum.reduce(eles, %{}, fn ele, char_info ->
+      ele = xpath ele, ele_xpath,
+        infs:  inf_xpath,
+        chars: char_xpath
+      [char] = ele.chars
+      infs = Enum.map ele.infs, & val_for_name_map[&1]
+
+      if length(infs) > 0 do
+        Map.put char_info, char, infs
+      else
+        char_info
+      end
+    end)
+  end
+
+  defp map_to_entries(entries) do
+    val_for_name_map = xml_entities_val_to_name
+
+    entries
+    |> Stream.map(fn entry_map ->
+      # if ke_inf found in the //entry ...
+      if length(entry_map.k_eles) > 0 do
+        # get all k_ele
+        kanji_info = get_kanji_info entry_map.k_eles, val_for_name_map
+
+        if kanji_info do
+          entry_map = Map.put entry_map, :kanji_info, kanji_info
+        end
+        # if entry_map.eid == "1000225" do
+        #   require IEx; IEx.pry
+        # end
+      end
+
+      Map.drop entry_map, [:k_ele, :r_ele]
+      struct Entry, entry_map
     end)
   end
 
   defp pos_and_info_entity_vals_to_names(entries) do
-    val_for_name = xml_entities_val_to_name
+    val_for_name_map = xml_entities_val_to_name
 
     entries
     |> Stream.map(fn entry ->
-      pos  = Enum.map(entry.pos,  &val_for_name[&1])
-      info = Enum.map(entry.info, &val_for_name[&1])
+      pos  = Enum.map(entry.pos,  &val_for_name_map[&1])
+      info = Enum.map(entry.info, &val_for_name_map[&1])
       %{entry | pos: pos, info: info}
     end)
   end
@@ -78,7 +142,7 @@ defmodule JMDict do
     ~x"./sense/misc/text() | ./sense/dial/text() | ./sense/field/text()"ls
   end
 
-  defp xml_stream do
+  def  xml_stream do
     xml_filepath = "/tmp/JMdict_e"
 
     unless File.exists? xml_filepath do

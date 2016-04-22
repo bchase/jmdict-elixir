@@ -14,10 +14,10 @@ defmodule JMDictTest do
 
   test "provides kanji/kana info", %{entries: entries} do
     akarasama = get_entry_by_eid entries, 1000225
-    assert akarasama.info[:kanji]["明白"] == "ateji"
+    assert akarasama.kanji_info["明白"] == ["ateji"]
 
     asoko = get_entry_by_eid entries, 1000320
-    assert akarasama.info[:kana]["あしこ"] == "ok"
+    assert akarasama.kana_info["あしこ"] == ["ok"]
   end
 
   test "parses xml into stream of struct ", %{entries: entries} do
