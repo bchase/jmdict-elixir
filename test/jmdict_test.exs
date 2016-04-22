@@ -12,6 +12,14 @@ defmodule JMDictTest do
     assert JMDict.xml_entities_val_to_name["abbreviation"] == "abbr"
   end
 
+  test "provides kanji/kana info", %{entries: entries} do
+    akarasama = get_entry_by_eid entries, 1000225
+    assert akarasama.info[:kanji]["明白"] == "ateji"
+
+    asoko = get_entry_by_eid entries, 1000320
+    assert akarasama.info[:kana]["あしこ"] == "ok"
+  end
+
   test "parses xml into stream of struct ", %{entries: entries} do
     # %JMDict.Entry{eid: "1000080", kanji: ["漢数字ゼロ"], ...}
     %{kanji: [kanji]} = get_entry_by_eid entries, 1000080
