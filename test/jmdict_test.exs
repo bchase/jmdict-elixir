@@ -7,6 +7,10 @@ defmodule JMDictTest do
     {:ok, entries: entries}
   end
 
+  test "parses xml entities into key/val pairs" do
+    assert JMDict.xml_entities["abbr"] == "abbreviation"
+  end
+
   test "parses xml into stream of struct ", %{entries: entries} do
     %{kanji: [kanji]} = entries
                         |> Stream.take_while(& String.to_integer(&1.eid) <= 1000080)
