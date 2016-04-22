@@ -8,7 +8,13 @@ Fetch and parse [JMDict](https://www.mdbg.net/chindict/export/cedict/cedict_1_0_
 
 ## Usage
 
-Use the entries stream in your code:
+The following call to `JMDict.entries_stream` will download the latest version of JMdict to `/tmp`, but if you'd like to use the copy stored in this repo instead, just copy it over before you run the code below.
+
+```
+$ cp xml/JMdict_e.gz /tmp
+```
+
+You can use the entries stream to seed your DB:
 
 ```elixir
 Enum.each JMDict.entries_stream, fn entry ->
@@ -27,9 +33,11 @@ Enum.each JMDict.entries_stream, fn entry ->
 end
 ```
 
-Example entry:
-
 ```elixir
+#####################
+### EXAMPLE ENTRY ###
+#####################
+
 %JMDict.Entry{
   eid: "1000920",
 
@@ -48,7 +56,7 @@ Example entry:
 }
 ```
 
-Look up [XML entity](http://www.csse.monash.edu.au/~jwb/jmdict_dtd_h.html) values by name, and vice versa:
+And you can also look up [XML entity](http://www.csse.monash.edu.au/~jwb/jmdict_dtd_h.html) values by name, and vice versa:
 
 ```elixir
 JMDict.xml_entities_name_to_val_map["abbr"]
