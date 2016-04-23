@@ -26,14 +26,45 @@ defmodule JMDictTest do
     assert match? ["漢数字ゼロ"], kansuujizero.kanji
 
     irasshai = get_entry_by_eid entries, 1000920
-    # %JMDict.Entry{eid: "1000920", glosses: ["come", "go", "stay", "welcome!"],
-    #   info: ["honorific or respectful (sonkeigo) language"],
-    #   kana: ["いらっしゃい", "いらしゃい"], kanji: [],
-    #   pos: ["interjection (kandoushi)", "n"],
-    #   xrefs: ["いらっしゃる・1", "いらっしゃいませ"]}
+    # %JMDict.Entry{
+    #   eid: "1000920",
+    #
+    #   kanji: [],
+    #
+    #   kana: [
+    #     [
+    #       %Reading{
+    #         text:    "いらっしゃい",
+    #         info:     [],
+    #         priority: ["spec1"],
+    #       },
+    #       %Reading{
+    #         text:    "いらしゃい",
+    #         info:     ["ik"],
+    #         priority: [],
+    #       }
+    #   ],
+    #
+    #   senses: [
+    #     %Sense{
+    #       glosses: ["welcome!"],
+    #       pos:     ["int", "n"],
+    #       # misc:    ["hon"], # TODO rename...<misc>
+    #       # field:   ["hon"], # TODO rename...<misc>
+    #       # dial:    ["hon"], # TODO rename...<misc>
+    #       xrefs:   ["いらっしゃる・1"],
+    #       info:    ["used as a polite imperative"]
+    #     },
+    #     %Sense{
+    #       glosses: ["come", "go", "stay"],
+    #       xrefs:   ["いらっしゃいませ"]
+    #     }
+    #   ]
+    # }
     assert match? "1000920", irasshai.eid
     assert match? 0, length(irasshai.kanji)
     assert match? ["いらっしゃい", _], irasshai.kana
+    assert match? %{"いらしゃい" => ["ik"]}, irasshai.kana_info
     assert match? ["come"|_], irasshai.glosses
     assert match? [_, "n"], irasshai.pos
     assert match? ["hon"], irasshai.info
