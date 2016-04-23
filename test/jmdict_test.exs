@@ -1,7 +1,7 @@
 defmodule JMDictTest do
   use ExUnit.Case, async: true
 
-  # alias JMDict.KanjiReading
+  alias JMDict.XMLEntities
 
   setup do
     entries = JMDict.entries_stream
@@ -14,8 +14,8 @@ defmodule JMDictTest do
   end
 
   test "xml entity lookup key<->val" do
-    assert JMDict.xml_entities_name_to_val_map["abbr"] == "abbreviation"
-    assert JMDict.xml_entities_val_to_name_map["abbreviation"] == "abbr"
+    assert XMLEntities.name_to_val_map["abbr"] == "abbreviation"
+    assert XMLEntities.val_to_name_map["abbreviation"] == "abbr"
   end
 
   test "provides kanji/kana info", %{entries: entries} do
