@@ -1,15 +1,11 @@
 defmodule JMDict.Entry do
-  alias JMDict.XMLEntities
-
   alias JMDict.Entry.{KanjiReading, KanaReading, Sense}
 
-  defstruct eid: "",
-    kanji:       [],
-    kana:        [],
-    senses:      [],
-    pos:         [],
-    info:        [],
-    xrefs:       []
+  defstruct \
+    eid:    "",
+    kanji:  [],
+    kana:   [],
+    senses: []
 
   def from_map(entry_map) do
     entry_map = Map.merge entry_map, %{
