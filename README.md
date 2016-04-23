@@ -33,11 +33,39 @@ Enum.each JMDict.entries_stream, fn entry ->
 end
 ```
 
-```elixir
-#####################
-### EXAMPLE ENTRY ###
-#####################
+This takes  JMdict XML:
 
+```xml
+<entry>
+  <ent_seq>1000920</ent_seq>
+  <r_ele>
+    <reb>いらっしゃい</reb>
+    <re_pri>spec1</re_pri>
+  </r_ele>
+  <r_ele>
+    <reb>いらしゃい</reb>
+    <re_inf>&ik;</re_inf>
+  </r_ele>
+  <sense>
+    <pos>&int;</pos>
+    <pos>&n;</pos>
+    <xref>いらっしゃる・1</xref>
+    <misc>&hon;</misc>
+    <s_inf>used as a polite imperative</s_inf>
+    <gloss>come</gloss>
+    <gloss>go</gloss>
+    <gloss>stay</gloss>
+  </sense>
+  <sense>
+    <xref>いらっしゃいませ</xref>
+    <gloss>welcome!</gloss>
+  </sense>
+</entry>
+```
+
+And turns it into a Elixir `JMDict.Entry` struct:
+
+```elixir
 %JMDict.Entry{
   eid: "1000920",
 
