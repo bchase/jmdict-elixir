@@ -56,9 +56,9 @@ defmodule JMDictTest do
     #     %Sense{
     #       glosses: ["welcome!"],
     #       pos:     ["int", "n"],
-    #       # misc:    ["hon"], # TODO rename...<misc>
-    #       # field:   ["hon"], # TODO rename...<misc>
-    #       # dial:    ["hon"], # TODO rename...<misc>
+    #       # misc:    ["hon"],
+    #       # field:   ["hon"],
+    #       # dial:    ["hon"],
     #       xrefs:   ["いらっしゃる・1"],
     #       info:    ["used as a polite imperative"]
     #     },
@@ -70,10 +70,8 @@ defmodule JMDictTest do
     # }
     assert match? "1000920", irasshai.eid
     assert match? 0, length(irasshai.kanji)
-    # assert match? ["いらっしゃい", _], irasshai.kana
-    # assert match? %{"いらしゃい" => ["ik"]}, irasshai.kana_info
     assert match? [_, %{text: "いらしゃい", info: ["ik"]}], irasshai.kana
-    assert match? [%{glosses: ["come"|_]}], irasshai.senses
+    assert match? [%{glosses: ["come"|_]},_], irasshai.senses
     assert match? [_, "n"], irasshai.pos
     assert match? ["hon"], irasshai.info
     assert match? [_,"いらっしゃいませ"], irasshai.xrefs
