@@ -115,12 +115,9 @@ defmodule JMDict do
   end
 
   defp entity_vals_to_names(entries) do
-    val_for_name_map = xml_entities_val_to_name_map
-
-    vals_arr_to_names = fn arr -> Enum.map arr, &val_for_name_map[&1] end
     info_map_vals_to_names = fn info_map ->
       Enum.reduce(info_map, %{}, fn {kanji, info_arr}, new_map ->
-        Map.put new_map, kanji, vals_arr_to_names.(info_arr)
+        Map.put new_map, kanji, entity_vals_arr_to_names(info_arr)
       end)
     end
 
