@@ -142,16 +142,6 @@ defmodule JMDict do
     |> Enum.reject(& is_nil &1)
   end
 
-  defp eid_xpath,     do: ~x"./ent_seq/text()"s
-  defp kanji_xpath,   do: ~x"./k_ele/keb/text()"ls
-  defp kana_xpath,    do: ~x"./r_ele/reb/text()"ls
-  defp glosses_xpath, do: ~x"./sense/gloss/text()"ls
-  defp pos_xpath,     do: ~x"./sense/pos/text()"ls
-  defp xrefs_xpath,   do: ~x"./sense/xref/text()"ls
-  defp info_xpath do
-    ~x"./sense/misc/text() | ./sense/dial/text() | ./sense/field/text()"ls
-  end
-
   defp xml_stream do
     xml_filepath = "/tmp/JMdict_e"
 
