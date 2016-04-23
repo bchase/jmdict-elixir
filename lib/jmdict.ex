@@ -31,7 +31,8 @@ defmodule JMDict do
     Enum.map arr, &xml_entity_val_to_name/1
   end
   def xml_entity_val_to_name(val) do
-    :ets.lookup(:jmdict_xml_entites, val)
+    [{_, name}] = :ets.lookup(ets_xml_ent_val_to_name_table, val)
+    name
   end
 
   defmodule Entry do
@@ -48,10 +49,8 @@ defmodule JMDict do
 
   defp ets_xml_ent_val_to_name_table, do: :jmdict_xml_entites
   defp populate_ets_xml_entites do
-    table_name = ets_xml_ent_val_to_name_table
-
-    if :ets.info(table_name) == :undefined do
-      :ets.new(table_name, [:set, :named_table])
+    if :ets.info(ets_xml_ent_val_to_name_table) == :undefined do
+      :ets.new(ets_xml_ent_val_to_name_table, [:named_table])
       |> :ets.insert(xml_entities_val_to_name)
     end
   end
@@ -128,8 +127,8 @@ defmodule JMDict do
     entries
     |> Stream.map(fn entry ->
       %{entry |
-        pos:        vals_arr_to_names.(entry.pos),
-        info:       vals_arr_to_names.(entry.info),
+        pos:        entity_vals_arr_to_names(entry.pos),
+        info:       entity_vals_arr_to_names(entry.info),
         kanji_info: info_map_vals_to_names.(entry.kanji_info),
         kana_info:  info_map_vals_to_names.(entry.kana_info)
       }
