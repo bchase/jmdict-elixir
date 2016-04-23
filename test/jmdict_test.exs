@@ -73,7 +73,7 @@ defmodule JMDictTest do
     # assert match? ["いらっしゃい", _], irasshai.kana
     # assert match? %{"いらしゃい" => ["ik"]}, irasshai.kana_info
     assert match? [_, %{text: "いらしゃい", info: ["ik"]}], irasshai.kana
-    assert match? ["come"|_], irasshai.glosses
+    assert match? [%{glosses: ["come"|_]}], irasshai.senses
     assert match? [_, "n"], irasshai.pos
     assert match? ["hon"], irasshai.info
     assert match? [_,"いらっしゃいませ"], irasshai.xrefs

@@ -35,30 +35,6 @@ defmodule JMDict.EntryXML do
                                          # attr g_gend "gender of the gloss"
         # pri: ~x{./pri/text()}ls,       # DNE in current JMdict_e file
         s_inf: ~x{./s_inf/text()}ls
-      ],
-
-    # xpath doc, ~x"//entry"e,
-    #   eid:     eid_xpath,
-      # kanji:   kanji_xpath,
-      # kana:    kana_xpath,
-      glosses: glosses_xpath,
-      pos:     pos_xpath,
-      xrefs:   xrefs_xpath,
-      info:    info_xpath,
-
-    # these are removed later for
-    # `kanji_info` and `kana_info`
-    k_eles: ~x"./k_ele"le,
-    r_eles: ~x"./r_ele"le
-  end
-
-  defp eid_xpath,     do: ~x"./ent_seq/text()"s
-  defp kanji_xpath,   do: ~x"./k_ele/keb/text()"ls
-  defp kana_xpath,    do: ~x"./r_ele/reb/text()"ls
-  defp glosses_xpath, do: ~x"./sense/gloss/text()"ls
-  defp pos_xpath,     do: ~x"./sense/pos/text()"ls
-  defp xrefs_xpath,   do: ~x"./sense/xref/text()"ls
-  defp info_xpath do
-    ~x"./sense/misc/text() | ./sense/dial/text() | ./sense/field/text()"ls
+      ]
   end
 end

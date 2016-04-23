@@ -1,35 +1,22 @@
 defmodule JMDict.Entry do
   alias JMDict.XMLEntities
 
+  alias JMDict.Entry.{KanjiReading, KanaReading}
+
   defstruct eid: "",
     kanji:       [],
     kana:        [],
-    glosses:     [],
+    senses:      [],
     pos:         [],
     info:        [],
     xrefs:       []
 
-  defmodule KanjiReading do
-    defstruct \
-      text: "",
-      info: []
+  def from_map(entry_map) do
+    entry_map = Map.merge entry_map, %{
+      kanji: Enum.map(entry_map.k_ele, &KanjiReading.from_element/1),
+      kana:  Enum.map(entry_map.r_ele, &KanaReading.from_element/1),
+    }
 
-    def from_element(k_ele) do
-      struct __MODULE__,
-        text: List.first(k_ele.keb),
-        info: XMLEntities.vals_to_names(k_ele.ke_inf)
-    end
-  end
-
-  defmodule KanaReading do
-    defstruct \
-      text: "",
-      info: []
-
-    def from_element(r_ele) do
-      struct __MODULE__,
-        text: List.first(r_ele.reb),
-        info: XMLEntities.vals_to_names(r_ele.re_inf)
-    end
+    struct __MODULE__, entry_map
   end
 end
