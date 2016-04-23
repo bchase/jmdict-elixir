@@ -1,6 +1,6 @@
 defmodule JMDict.XMLEntities do
   def table_name, do: :jmdict_xml_entites
-  def populate_ets_xml_entites do
+  def populate_ets do
     if :ets.info(table_name) == :undefined do
       :ets.new(table_name, [:named_table])
       |> :ets.insert(val_to_name_tuples)
