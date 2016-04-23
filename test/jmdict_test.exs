@@ -1,6 +1,8 @@
 defmodule JMDictTest do
   use ExUnit.Case, async: true
 
+  # alias JMDict.KanjiReading
+
   setup do
     entries = JMDict.entries_stream
 
@@ -18,10 +20,10 @@ defmodule JMDictTest do
 
   test "provides kanji/kana info", %{entries: entries} do
     akarasama = get_entry_by_eid entries, 1000225
-    assert akarasama.kanji_info["明白"] == ["ateji"]
+    assert match? [%{text: "明白", info: ["ateji"]}|_], akarasama.kanji
 
     asoko = get_entry_by_eid entries, 1000320
-    assert asoko.kana_info["あしこ"] == ["ok"]
+    assert match? [_,_,_,%{text: "あしこ", info: ["ok"]}|_], asoko.kana
   end
 
   test "parses xml into stream of struct ", %{entries: entries} do

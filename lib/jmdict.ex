@@ -42,9 +42,7 @@ defmodule JMDict do
       glosses:     [],
       pos:         [],
       info:        [],
-      xrefs:       [],
-      kanji_info: %{},
-      kana_info:  %{}
+      xrefs:       []
   end
 
   defp ets_xml_ent_val_to_name_table, do: :jmdict_xml_entites
@@ -74,40 +72,12 @@ defmodule JMDict do
     |> Stream.map(&EntryXML.parse/1)
   end
 
-  defp get_kanji_info(eles) do
-    get_char_info eles,
-      ~x"//k_ele"e, ~x"./keb/text()"ls, ~x"./ke_inf/text()"ls
-  end
-
-  defp get_kana_info(eles) do
-    get_char_info eles,
-      ~x"//r_ele"e, ~x"./reb/text()"ls, ~x"./re_inf/text()"ls
-  end
-
-  defp get_char_info(eles, ele_xpath, char_xpath, inf_xpath) do
-    Enum.reduce(eles, %{}, fn ele, char_info ->
-      ele = xpath ele, ele_xpath,
-        infs:  inf_xpath,
-        chars: char_xpath
-
-      if length(ele.infs) > 0 do
-        [char] = ele.chars
-        Map.put char_info, char, ele.infs
-      else
-        char_info
-      end
-    end)
-  end
-
   defp map_to_entries(entries) do
     entries
     |> Stream.map(fn entry_map ->
       entry_map = Map.merge entry_map, %{
         kanji: Enum.map(entry_map.k_ele, &KanjiReading.from_element/1),
         kana:  Enum.map(entry_map.r_ele, &KanaReading.from_element/1),
-        # kana:  Enum.map(entry_map.r_ele, & List.first(&1.reb)),
-        kanji_info: get_kanji_info(entry_map.k_eles),
-        kana_info:  get_kana_info(entry_map.r_eles)
       }
 
       struct Entry, entry_map
@@ -115,19 +85,11 @@ defmodule JMDict do
   end
 
   defp entity_vals_to_names(entries) do
-    info_map_vals_to_names = fn info_map ->
-      Enum.reduce(info_map, %{}, fn {kanji, info_arr}, new_map ->
-        Map.put new_map, kanji, entity_vals_arr_to_names(info_arr)
-      end)
-    end
-
     entries
     |> Stream.map(fn entry ->
       %{entry |
-        pos:        entity_vals_arr_to_names(entry.pos),
-        info:       entity_vals_arr_to_names(entry.info),
-        kanji_info: info_map_vals_to_names.(entry.kanji_info),
-        kana_info:  info_map_vals_to_names.(entry.kana_info)
+        pos:  entity_vals_arr_to_names(entry.pos),
+        info: entity_vals_arr_to_names(entry.info),
       }
     end)
   end
