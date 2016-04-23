@@ -1,6 +1,9 @@
 defmodule JMDict.Entry.Sense do
+  alias JMDict.XMLEntities
+
   defstruct \
-    glosses: []
+    glosses: [],
+    pos:     []
   # sense: [ # SENSES (GLOSSES)
   #   ~x{./sense}le,
   #   stagk:   ~x{./stagk/text()}ls,
@@ -20,6 +23,9 @@ defmodule JMDict.Entry.Sense do
   # ]
 
   def from_element(sense) do
-    struct __MODULE__, %{glosses: sense.gloss}
+    struct __MODULE__, %{
+      glosses: sense.gloss,
+      pos:     XMLEntities.vals_to_names sense.pos
+    }
   end
 end

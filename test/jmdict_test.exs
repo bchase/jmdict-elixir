@@ -18,21 +18,34 @@ defmodule JMDictTest do
     assert XMLEntities.val_to_name_map["abbreviation"] == "abbr"
   end
 
-  test "provides kanji/kana info", %{entries: entries} do
+  test "provides kanji + info", %{entries: entries} do
     akarasama = get_entry_by_eid entries, 1000225
     assert match? [%{text: "明白", info: ["ateji"]}|_], akarasama.kanji
+  end
 
+  test "parses kana + info", %{entries: entries} do
     asoko = get_entry_by_eid entries, 1000320
     assert match? [_,_,_,%{text: "あしこ", info: ["ok"]}|_], asoko.kana
   end
 
-  test "parses xml into stream of struct ", %{entries: entries} do
-    kansuujizero = get_entry_by_eid entries, 1000080
-    # %JMDict.Entry{eid: "1000080", kanji: ["漢数字ゼロ"], ...}
-    assert match? [%{text: "漢数字ゼロ"}], kansuujizero.kanji
-    # assert match? ["漢数字ゼロ"], kansuujizero.kanji
-
+  test "parses sense glosses + pos", %{entries: entries} do
     irasshai = get_entry_by_eid entries, 1000920
+    assert match? "1000920", irasshai.eid
+    assert match? 0, length(irasshai.kanji)
+    assert match? [_, %{text: "いらしゃい", info: ["ik"]}], irasshai.kana
+    assert match? [%{glosses: ["come"|_], pos: [_,"n"]},_], irasshai.senses
+  end
+
+  def get_entry_by_eid(entries, eid) do
+    eid = if is_integer(eid), do: eid, else: String.to_integer(eid)
+
+    entries
+    |> Stream.take_while(& String.to_integer(&1.eid) <= eid)
+    |> Enum.to_list
+    |> List.last
+  end
+end
+
     # %JMDict.Entry{
     #   eid: "1000920",
     #
@@ -68,23 +81,3 @@ defmodule JMDictTest do
     #     }
     #   ]
     # }
-    assert match? "1000920", irasshai.eid
-    assert match? 0, length(irasshai.kanji)
-    assert match? [_, %{text: "いらしゃい", info: ["ik"]}], irasshai.kana
-    assert match? [%{glosses: ["come"|_]},_], irasshai.senses
-
-    # TODO parse the rest of //entry/sense
-    # assert match? ["hon"], irasshai.info
-    # assert match? [_,"いらっしゃいませ"], irasshai.xrefs
-    assert match? [_, "n"], irasshai.pos
-  end
-
-  def get_entry_by_eid(entries, eid) do
-    eid = if is_integer(eid), do: eid, else: String.to_integer(eid)
-
-    entries
-    |> Stream.take_while(& String.to_integer(&1.eid) <= eid)
-    |> Enum.to_list
-    |> List.last
-  end
-end
