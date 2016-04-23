@@ -25,7 +25,7 @@ Enum.each JMDict.entries_stream, fn entry ->
 end
 ```
 
-```
+```elixir
 # an entry has the top-level structure...
 
 %Entry{
