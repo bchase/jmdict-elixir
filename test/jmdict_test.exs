@@ -32,7 +32,7 @@ defmodule JMDictTest do
   end
 
   test "parses sense glosses, pos, etc", %{entries: entries} do
-    # eids = [1000920, 1001390, 1002480, 1000320]
+    # eids = [1000920, 1001390, 1002480, 1000320, 1010230]
     # [irasshai, oden, otenba, asoko] = get_entries_by_eids entries, eids
     irasshai = get_entry_by_eid entries, 1000920
     oden     = get_entry_by_eid entries, 1001390
@@ -53,8 +53,12 @@ defmodule JMDictTest do
     assert match? [_,%{stagk: ["半片"]}], hanpen.senses
     # STAGR
     assert match? [_,%{stagr: ["あそこ",_]},_], asoko.senses
-    # TODO LSOURCE # assert # <lsource xml:lang="dut">ontembaar</lsource>
   end
+
+  # TODO LSOURCE # assert # <lsource xml:lang="dut">ontembaar</lsource>
+  # TODO rename stagk/r
+  test "//entry/sense/lsource w/ xml:lang attr"
+  test "finish kanji/kana e.g. ke_pri"
 
   def get_entry_by_eid(entries, eid) do
     eid = if is_integer(eid), do: eid, else: String.to_integer(eid)
