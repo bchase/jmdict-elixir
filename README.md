@@ -18,22 +18,54 @@ You can use the entries stream to seed your DB:
 
 ```elixir
 Enum.each JMDict.entries_stream, fn entry ->
-  entry.eid        # entry id         #   String
-  entry.kanji      # kanji            #  [String]
-  entry.kana       # kana             #  [String]
-  entry.glosses    # glosses          #  [String]
-  entry.pos        # part of speech   #  [String]
-  entry.info       # additonal info   #  [String]
-  entry.xrefs      # cross references #  [String]
-  entry.kanji_info # kanji info       # %{String => [String]}
-  entry.kana_info  # kana info        # %{String => [String]}
+  # ...
 
   entry = struct YourJMDictEntryModel, entry
   Repo.insert! entry
 end
 ```
 
-This takes  JMdict XML:
+```
+# an entry has the top-level structure...
+
+%Entry{
+  eid:    String.t,
+  kanji:  [%KanjiReading{}],
+  kana:   [%KanaReading{}],
+  senses: [%Sense{}],
+}
+
+# where those structs have structures like...
+
+%KanjiReading{
+  text: String.t,   # the kanji
+  info: [String.t],
+  # more to come
+}
+
+%KanaReading{
+  text: String.t,   # the kana
+  info: [String.t],
+  # more to come
+}
+
+%Sense{
+  glosses: [String.t],
+  pos:     [String.t],
+  dial:    [String.t],
+  info:    [String.t],
+  misc:    [String.t],
+  field:   [String.t],
+  xrefs:   [String.t],
+  stagk:   [String.t],
+  stagr:   [String.t],
+  # more to come
+  # lsource: [String.t],
+}
+```
+
+<!--
+This takes JMdict XML:
 
 ```xml
 <entry>
@@ -83,8 +115,9 @@ And turns it into a Elixir `JMDict.Entry` struct:
   xrefs: ["いらっしゃる・1", "いらっしゃいませ"]
 }
 ```
+-->
 
-And you can also look up [XML entity](http://www.csse.monash.edu.au/~jwb/jmdict_dtd_h.html) values by name, and vice versa:
+You can also look up [XML entity](http://www.csse.monash.edu.au/~jwb/jmdict_dtd_h.html) values by name, and vice versa:
 
 ```elixir
 JMDict.xml_entities_name_to_val_map["abbr"]
