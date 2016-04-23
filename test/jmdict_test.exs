@@ -1,5 +1,5 @@
 defmodule JMDictTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
 
   alias JMDict.XMLEntities
 

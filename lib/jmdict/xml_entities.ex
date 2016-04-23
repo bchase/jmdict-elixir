@@ -35,7 +35,7 @@ defmodule JMDict.XMLEntities do
 
   defp xml_entity_re, do: ~r{\<\!ENTITY ([^\s]+) "(.+)"\>}
   defp entity_tuples do
-    JMDict.xml_file_stream
+    JMDict.XML.stream
     |> Stream.take_while(& !Regex.match? ~r{^\<JMdict}, &1)
     |> Enum.to_list
     |> Enum.map(fn line ->
