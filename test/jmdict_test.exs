@@ -43,6 +43,8 @@ defmodule JMDictTest do
 
   test "parses sense glosses, pos, etc", %{entries: entries} do
     irasshai  = get_entry_by_eid entries, 1000920
+
+    require IEx; IEx.pry
     oden      = get_entry_by_eid entries, 1001390
     asoko     = get_entry_by_eid entries, 1000320
     hanpen    = get_entry_by_eid entries, 1010230

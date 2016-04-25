@@ -38,15 +38,17 @@ end
 # where those structs have structures like...
 
 %KanjiReading{
-  text: String.t,   # the kanji
-  info: [String.t],
-  # more to come
+  text:  String.t, # the kanji
+  info:  [String.t],
+  lists: [String.t],
 }
 
 %KanaReading{
-  text: String.t,   # the kana
-  info: [String.t],
-  # more to come
+  text:    String.t, # the kana
+  nokanji: boolean || false,
+  info:    [String.t],
+  lists:   [String.t],
+  kanji:   [String.t],
 }
 
 %Sense{
@@ -59,8 +61,14 @@ end
   xrefs:   [String.t],
   stagk:   [String.t],
   stagr:   [String.t],
-  # more to come
-  # lsource: [String.t],
+  sources: [%Source{}],
+}
+
+%Source{
+  word: String.t,
+  lang: String.t || "eng",
+  type: String.t || "full",
+  wasei: boolean || false,
 }
 ```
 
@@ -98,22 +106,19 @@ This takes JMdict XML:
 And turns it into a Elixir `JMDict.Entry` struct:
 
 ```elixir
-%JMDict.Entry{
-  eid: "1000920",
+%JMDict.Entry{eid: "1000920",
+ kana: [%JMDict.Entry.KanaReading{info: [], kanji: [], lists: ["spec1"],
+    nokanji: false, text: "いらっしゃい"},
+      %JMDict.Entry.KanaReading{info: ["ik"], kanji: [], lists: [], nokanji: false,
+         text: "いらしゃい"}], kanji: [],
+          senses: [%JMDict.Entry.Sense{dial: [], field: [],
+             glosses: ["come", "go", "stay"], info: ["used as a polite imperative"],
+                misc: ["hon"], pos: ["int", "n"], sources: [], stagk: [], stagr: [],
+                   xrefs: ["いらっしゃる・1"]},
+                     %JMDict.Entry.Sense{dial: [], field: [], glosses: ["welcome!"], info: [],
+                        misc: [], pos: [], sources: [], stagk: [], stagr: [],
+                           xrefs: ["いらっしゃいませ"]}]}
 
-  kanji: [],
-  kanji_info: %{},
-
-  kana: ["いらっしゃい", "いらしゃい"],
-  kana_info: %{"いらしゃい" => ["ik"]},
-
-  glosses: ["come", "go", "stay", "welcome!"],
-
-  pos: ["int", "n"],
-  info: ["hon"],
-
-  xrefs: ["いらっしゃる・1", "いらっしゃいませ"]
-}
 ```
 -->
 
