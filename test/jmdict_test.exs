@@ -18,17 +18,27 @@ defmodule JMDictTest do
 
   test "parses eid", %{entries: entries} do
     akarasama = get_entry_by_eid entries, 1000225
+
     assert akarasama.eid == "1000225"
   end
 
   test "parses kanji + info", %{entries: entries} do
     akarasama = get_entry_by_eid entries, 1000225
+    asoko     = get_entry_by_eid entries, 1000320
+
     assert match? [%{text: "明白", info: ["ateji"]}|_], akarasama.kanji
+    assert match? [%{lists: ["ichi1"]}|_], asoko.kanji
   end
 
-  test "parses kana + info", %{entries: entries} do
-    asoko = get_entry_by_eid entries, 1000320
+  test "parses kana/info/lists/nokanji/restr", %{entries: entries} do
+    akan       = get_entry_by_eid entries, 1000230
+    asoko      = get_entry_by_eid entries, 1000320
+    attoiumani = get_entry_by_eid entries, 1000390
+
     assert match? [_,_,_,%{text: "あしこ", info: ["ok"]}|_], asoko.kana
+    assert match? [%{lists: ["ichi1"]}|_], asoko.kana
+    assert match? [_,%{nokanji: true}], akan.kana
+    assert match? [%{kanji: ["あっという間に", "あっと言う間に"]},_], attoiumani.kana
   end
 
   test "parses sense glosses, pos, etc", %{entries: entries} do
@@ -58,7 +68,6 @@ defmodule JMDictTest do
   # TODO LSOURCE # assert # <lsource xml:lang="dut">ontembaar</lsource>
   # TODO rename stagk/r
   test "//entry/sense/lsource w/ xml:lang attr"
-  test "finish kanji/kana e.g. ke_pri"
 
   def get_entry_by_eid(entries, eid) do
     eid = if is_integer(eid), do: eid, else: String.to_integer(eid)

@@ -16,7 +16,7 @@ defmodule JMDict.EntryXML do
           reb: ~x"./reb/text()"ls,
           re_inf: ~x"./re_inf/text()"ls,
           re_pri: ~x"./re_pri/text()"ls,
-          re_nokanji: ~x"./re_nokanji/text()"ls, # TODO NULL <re_nokanji/>
+          re_nokanji: ~x"./re_nokanji"e, # TODO NULL <re_nokanji/>
           re_restr: ~x"./re_restr/text()"ls,
       ],
       sense: [ # SENSES (GLOSSES)
