@@ -1,9 +1,11 @@
 defmodule JMDict.Entry.Sense do
   alias JMDict.XMLEntities
 
+  alias JMDict.Entry.Sense.Source
+
   defstruct \
     glosses: [],
-    lsource: [],
+    sources: [],
     pos:     [],
     dial:    [],
     info:    [],
@@ -13,13 +15,10 @@ defmodule JMDict.Entry.Sense do
     stagk:   [],
     stagr:   []
 
-
   def from_element(sense) do
     struct __MODULE__, %{
-      glosses: sense.gloss, # attr g_gend "gender of the gloss"
-  #   lsource: # attr xml:lang="eng" (default) ISO 639-2
-  #     # attr ls_type="full"(default) || "part"
-  #     # attr ls_wasei="y" means "yes" e.g. waseieigo
+      glosses: sense.gloss,
+      sources: Source.parse(sense.lsource),
       pos:     XMLEntities.vals_to_names(sense.pos),
       dial:    XMLEntities.vals_to_names(sense.dial),
       misc:    XMLEntities.vals_to_names(sense.misc),

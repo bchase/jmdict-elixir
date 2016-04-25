@@ -42,13 +42,11 @@ defmodule JMDictTest do
   end
 
   test "parses sense glosses, pos, etc", %{entries: entries} do
-    # eids = [1000920, 1001390, 1002480, 1000320, 1010230]
-    # [irasshai, oden, otenba, asoko] = get_entries_by_eids entries, eids
-    irasshai = get_entry_by_eid entries, 1000920
-    oden     = get_entry_by_eid entries, 1001390
-    otenba   = get_entry_by_eid entries, 1002480
-    asoko    = get_entry_by_eid entries, 1000320
-    hanpen   = get_entry_by_eid entries, 1010230
+    irasshai  = get_entry_by_eid entries, 1000920
+    oden      = get_entry_by_eid entries, 1001390
+    asoko     = get_entry_by_eid entries, 1000320
+    hanpen    = get_entry_by_eid entries, 1010230
+    sabusakku = get_entry_by_eid entries, 1057250
 
     # GLOSS & POS
     assert match? [%{glosses: ["come"|_], pos: [_,"n"]},_], irasshai.senses
@@ -63,11 +61,11 @@ defmodule JMDictTest do
     assert match? [_,%{stagk: ["半片"]}], hanpen.senses
     # STAGR
     assert match? [_,%{stagr: ["あそこ",_]},_], asoko.senses
+    # LSOURCE
+    assert match? [%{sources: [_,%{lang: "ger", type: "part", wasei: true, word: "Sack"}]}], sabusakku.senses
   end
 
-  # TODO LSOURCE # assert # <lsource xml:lang="dut">ontembaar</lsource>
-  # TODO rename stagk/r
-  test "//entry/sense/lsource w/ xml:lang attr"
+  # TODO mv || rename stagk/r?
 
   def get_entry_by_eid(entries, eid) do
     eid = if is_integer(eid), do: eid, else: String.to_integer(eid)
@@ -77,47 +75,4 @@ defmodule JMDictTest do
     |> Enum.to_list
     |> List.last
   end
-
-  def get_entries_by_eids(entries, eids) do
-    entries
-    |> Stream.take_while(& String.to_integer(&1.eid) <= Enum.max(eids))
-    |> Stream.reject(fn entry -> Enum.any?(eids, & entry.eid != &1) end)
-    |> Enum.to_list
-  end
 end
-
-# %JMDict.Entry{
-#   eid: "1000920",
-#
-#   kanji: [],
-#
-#   kana: [
-#     [
-#       %Reading{
-#         text:    "いらっしゃい",
-#         info:     [],
-#         priority: ["spec1"],
-#       },
-#       %Reading{
-#         text:    "いらしゃい",
-#         info:     ["ik"],
-#         priority: [],
-#       }
-#   ],
-#
-#   senses: [
-#     %Sense{
-#       glosses: ["welcome!"],
-#       pos:     ["int", "n"],
-#       # misc:    ["hon"],
-#       # field:   ["hon"],
-#       # dial:    ["hon"],
-#       xrefs:   ["いらっしゃる・1"],
-#       info:    ["used as a polite imperative"]
-#     },
-#     %Sense{
-#       glosses: ["come", "go", "stay"],
-#       xrefs:   ["いらっしゃいませ"]
-#     }
-#   ]
-# }
